@@ -1,0 +1,23 @@
+CFLAGS= -DTEMPLATE_ENGINE -Wno-pointer-to-int-cast
+LFLAGS= -lfl
+#GCC= i686-w64-mingw32-gcc
+GCC= gcc
+
+all:	freshenup template_engine
+
+template_engine: template_engine.tab.c y.tab.h lex.yy.c
+	$(GCC) $(CFLAGS) -c lex.yy.c template_engine.tab.c template_engine.c
+	$(GCC) -o template_engine lex.yy.o template_engine.tab.o template_engine.o $(LFLAGS)
+
+y.tab.h template_engine.tab.c:  template_engine.y 
+	bison -dv template_engine.y
+	mv template_engine.tab.h y.tab.h
+
+lex.yy.c: template_engine.l
+	flex template_engine.l
+
+freshenup:
+	touch template_engine.l template_engine.y
+
+clean:
+	rm *.o *.output *.tab.h *.yy.c template_engine.exe
